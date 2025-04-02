@@ -7,9 +7,11 @@ import * as $_app from "./routes/_app.tsx";
 import * as $api_data_index from "./routes/api/data/index.ts";
 import * as $api_dbcheck from "./routes/api/dbcheck.ts";
 import * as $api_joke from "./routes/api/joke.ts";
+import * as $data_index from "./routes/data/index.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $LiveRequestData from "./islands/LiveRequestData.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -19,11 +21,13 @@ const manifest = {
     "./routes/api/data/index.ts": $api_data_index,
     "./routes/api/dbcheck.ts": $api_dbcheck,
     "./routes/api/joke.ts": $api_joke,
+    "./routes/data/index.tsx": $data_index,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
   },
   islands: {
     "./islands/Counter.tsx": $Counter,
+    "./islands/LiveRequestData.tsx": $LiveRequestData,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

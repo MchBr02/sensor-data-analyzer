@@ -4,8 +4,9 @@ import { ensureDir } from "https://deno.land/std/fs/mod.ts";
 
 import { saveToCollection } from "./database.ts";
 
-const dataFolder = "./data";
+let latestRequestData: Record<string, unknown> | null = null;
 
+const dataFolder = "./data";
 // Ensure the data folder exists
 await ensureDir(dataFolder);
 
@@ -45,6 +46,7 @@ async function saveHttpRequestDataToDatabase(requestData: Record<string, unknown
       sensorId: "http-request-data",
       deviceId: deviceId,
       sessionId: sessionId,
+      time: body.time || "No time provided",
       timestamp: new Date().toISOString(),
       values: headers,
     };
@@ -122,6 +124,7 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
                       sensorId: sensorId,
                       deviceId: body.deviceId,
                       sessionId: body.sessionId,
+                      time: body.time || "No time provided",
                       timestamp: new Date().toISOString(),
                       values: item.values,
                   };
@@ -149,14 +152,15 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
  */
 export async function RequestDataHandler(requestData: Record<string, unknown>): Promise<Response> {
   try {
-      // const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-
       if (requestData.method === "POST") {
+          // Save data to the database
           await saveDataToDatabase(requestData);
+          // Update the latest request data for real-time display
+          latestRequestData = requestData;
           console.log("✅ Request data handled successfully");
           return new Response("✅ Request data handled successfully", { status: 200 });
       } else if (requestData.method === "GET") {
-          return new Response("✅ Render data page", { status: 200 });
+          return new Response(JSON.stringify(latestRequestData), { status: 200 });
       } else {
           return new Response("Method Not Allowed", { status: 405 });
       }
@@ -168,4 +172,11 @@ export async function RequestDataHandler(requestData: Record<string, unknown>): 
       console.error(errorMessage);
       return new Response("❌ Failed to process the request data: " + errorMessage, { status: 500 });
   }
+}
+
+/**
+* Get the latest request data
+*/
+export function getLatestRequestData(): Record<string, unknown> | null {
+  return latestRequestData;
 }
