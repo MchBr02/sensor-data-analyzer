@@ -1,11 +1,4 @@
-Here is a comprehensive `README.md` file for your Deno FreshJS project with MongoDB, including Docker setup instructions.
-
----
-
-### **README.md**
-
-```markdown
-# Sensor Data Analyzer
+### Sensor Data Analyzer
 
 A Deno Fresh.js application that collects and analyzes sensor data, stores it in a MongoDB database, and provides real-time updates via WebSockets.
 
