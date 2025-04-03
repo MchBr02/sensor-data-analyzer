@@ -62,6 +62,14 @@ http://localhost:8000/data
 
 ---
 
+# Pull from Docker Hub
+Docker Pull Command:
+```
+docker pull mr02/sensor-data-analyzer
+```
+
+---
+
 ## Docker Deployment
 
 ### Building and Running with Docker Compose
