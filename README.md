@@ -190,11 +190,3 @@ docker-compose up --build -d
 ## License
 This project is licensed under the MIT License.
 ```
-
----
-
-### **How to Use:**
-1. Copy the provided `README.md` content into the `README.md` file in your project root.
-2. Update the repository URL and Docker Hub username as needed.
-
-Let me know if you would like any more customizations or additional sections!
