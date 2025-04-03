@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  deno-app:
+    build: .
+    container_name: sensor-data-analyzer
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_HOST_ADRESS=${MONGODB_HOST_ADRESS}
+      - MONGODB_HOST_PORT=${MONGODB_HOST_PORT}
+      - MONGODB_DB_NAME=${MONGODB_DB_NAME}
+      - MONGODB_DB_COLLECTION=${MONGODB_DB_COLLECTION}
+      - MONGODB_ADMIN_USER=${MONGODB_ADMIN_USER}
+      - MONGODB_ADMIN_PASS=${MONGODB_ADMIN_PASS}
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+    command: ["deno", "task", "start"]
+  
+  mongo:
+    image: mongo:6.0
+    container_name: mongo-db
+    ports:
+      - ${MONGODB_HOST_PORT}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ADMIN_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PASS}
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

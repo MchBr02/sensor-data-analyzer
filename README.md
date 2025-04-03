@@ -1,16 +1,24 @@
-# Fresh project
+# Sensor Data Analyzer
 
-Your new Fresh project is ready to go. You can follow the Fresh "Getting
-Started" guide here: https://fresh.deno.dev/docs/getting-started
+A Deno Fresh.js application that collects and analyzes sensor data, stores it in a MongoDB database, and provides real-time updates via WebSockets.
 
-### Usage
+## Features
+- Real-time sensor data display
+- Data storage using MongoDB
+- WebSocket support for live updates
+- Dockerized for easy deployment
 
-Make sure to install Deno: https://deno.land/manual/getting_started/installation
+---
 
-Then start the project:
+## Prerequisites
+- Docker and Docker Compose
+- Deno (for local development)
 
-```
-deno task start
-```
+---
 
-This will watch the project directory and restart as necessary.
+## Getting Started
+
+### Clone the Repository
+```bash
+git clone https://github.com/mr02/sensor-data-analyzer.git
+cd sensor-data-analyzer
