@@ -96,8 +96,8 @@ Use `curl` to send a POST request:
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{
   "messageId": 57,
-  "sessionId": "977f3a81-3997-483b-9bc0-664865ecfaaa",
-  "deviceId": "ada9f0d5-1dda-4c53-bcaf-d1f0ecae2835",
+  "sessionId": "944g3a81-2217-783b-9ha3-226376hdzabc",
+  "deviceId": "ada7f0d5-1hht-4f53-baaf-d1f0yctz2435",
   "payload": [
     {
       "name": "network",
@@ -108,10 +108,10 @@ curl -X POST -H "Content-Type: application/json" -d '{
         "isInternetReachable": true,
         "isWifiEnabled": true,
         "isConnectionExpensive": false,
-        "ssid": "Polineo5560_Fast",
-        "bssid": "56:db:a2:4b:b0:54",
+        "ssid": "Super_Fast_WiFi",
+        "bssid": "27:df:v9:7b:b5:24",
         "strength": 99,
-        "ipAddress": "192.168.55.118",
+        "ipAddress": "192.168.62.18",
         "frequency": 5200
       }
     }
