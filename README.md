@@ -189,4 +189,3 @@ docker-compose up --build -d
 
 ## License
 This project is licensed under the MIT License.
-```
