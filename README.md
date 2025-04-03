@@ -1,4 +1,4 @@
-### Sensor Data Analyzer
+# Sensor Data Analyzer
 
 A Deno Fresh.js application that collects and analyzes sensor data, stores it in a MongoDB database, and provides real-time updates via WebSockets.
 
@@ -62,15 +62,15 @@ http://localhost:8000/data
 
 ---
 
-# Pull from Docker Hub
+## Docker Deployment
+
+### Pull from Docker Hub
 Docker Pull Command:
 ```
 docker pull mr02/sensor-data-analyzer
 ```
 
----
-
-## Docker Deployment
+or
 
 ### Building and Running with Docker Compose
 To build and start the containers:
