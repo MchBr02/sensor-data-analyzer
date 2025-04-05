@@ -9,7 +9,7 @@ export default function LiveData() {
 
         function connectWebSocket() {
             // Use the window location to dynamically get the correct IP address
-            const host = window.location.host;
+            const host = globalThis.location.host;
             const socketUrl = `ws://${host}/api/data`;
             console.log("🔗 Connecting to WebSocket at:", socketUrl);
 

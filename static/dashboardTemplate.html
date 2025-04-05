@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superadmin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div x-data="{
+        sidebarOpen: false,
+        activePage: 'dashboard'
+    }" class="min-h-screen flex" @keydown.escape="sidebarOpen = false">
+        <!-- Overlay -->
+        <div x-show="sidebarOpen" 
+             @click="sidebarOpen = false"
+             class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 transform transition-transform duration-300 ease-in-out md:translate-x-0"
+               :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
+            <div class="flex items-center justify-between h-16 px-4 bg-gray-900">
+                <span class="text-white text-lg font-bold">Superadmin</span>
+                <button @click="sidebarOpen = false" class="text-white md:hidden" aria-label="Close sidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="mt-5 overflow-y-auto h-[calc(100vh-4rem)]">
+                <a href="#" 
+                   @click.prevent="activePage = 'dashboard'; sidebarOpen = false" 
+                   class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700"
+                   :class="{ 'bg-gray-700': activePage === 'dashboard' }">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+
+                <div x-data="{ open: false }">
+                    <button @click="open = !open" 
+                            class="w-full flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700"
+                            :aria-expanded="open"
+                            aria-controls="users-menu">
+                        <div class="flex items-center">
+                            <i class="fas fa-users mr-3"></i>Users
+                        </div>
+                        <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    </button>
+                    <div x-show="open" 
+                         id="users-menu"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95"
+                         class="bg-gray-700">
+                        <a href="#" @click.prevent="activePage = 'all-users'; sidebarOpen = false" 
+                           class="block px-8 py-2 text-gray-200 hover:bg-gray-600"
+                           :class="{ 'bg-gray-600': activePage === 'all-users' }">All Users</a>
+                        <a href="#" @click.prevent="activePage = 'add-user'; sidebarOpen = false" 
+                           class="block px-8 py-2 text-gray-200 hover:bg-gray-600"
+                           :class="{ 'bg-gray-600': activePage === 'add-user' }">Add User</a>
+                        <a href="#" @click.prevent="activePage = 'user-roles'; sidebarOpen = false" 
+                           class="block px-8 py-2 text-gray-200 hover:bg-gray-600"
+                           :class="{ 'bg-gray-600': activePage === 'user-roles' }">User Roles</a>
+                    </div>
+                </div>
+
+                <div x-data="{ open: false }">
+                    <button @click="open = !open" 
+                            class="w-full flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700"
+                            :aria-expanded="open"
+                            aria-controls="settings-menu">
+                        <div class="flex items-center">
+                            <i class="fas fa-cog mr-3"></i>Settings
+                        </div>
+                        <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    </button>
+                    <div x-show="open"
+                         id="settings-menu"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95"
+                         class="bg-gray-700">
+                        <a href="#" @click.prevent="activePage = 'general'; sidebarOpen = false" 
+                           class="block px-8 py-2 text-gray-200 hover:bg-gray-600"
+                           :class="{ 'bg-gray-600': activePage === 'general' }">General</a>
+                        <a href="#" @click.prevent="activePage = 'security'; sidebarOpen = false" 
+                           class="block px-8 py-2 text-gray-200 hover:bg-gray-600"
+                           :class="{ 'bg-gray-600': activePage === 'security' }">Security</a>
+                        <a href="#" @click.prevent="activePage = 'notifications'; sidebarOpen = false" 
+                           class="block px-8 py-2 text-gray-200 hover:bg-gray-600"
+                           :class="{ 'bg-gray-600': activePage === 'notifications' }">Notifications</a>
+                    </div>
+                </div>
+
+                <a href="#" 
+                   @click.prevent="activePage = 'analytics'; sidebarOpen = false" 
+                   class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700"
+                   :class="{ 'bg-gray-700': activePage === 'analytics' }">
+                    <i class="fas fa-chart-bar mr-3"></i>Analytics
+                </a>
+                <a href="#" 
+                   @click.prevent="activePage = 'logout'; sidebarOpen = false" 
+                   class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700"
+                   :class="{ 'bg-gray-700': activePage === 'logout' }">
+                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col md:ml-64">
+            <header class="bg-white shadow-sm h-16 flex items-center justify-between px-4 fixed top-0 right-0 left-0 md:left-64 z-30">
+                <button @click="sidebarOpen = true" class="text-gray-500 md:hidden" aria-label="Open sidebar">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <div class="flex items-center">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..."
+                               class="pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               aria-label="Search">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <div class="ml-4 flex items-center">
+                        <button class="text-gray-500 mr-4" aria-label="Notifications">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <div class="w-8 h-8 rounded-full bg-gray-300" role="img" aria-label="User avatar"></div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="p-6 mt-16 flex-1 overflow-y-auto">
+                <!-- Dashboard Content -->
+                <div x-show="activePage === 'dashboard'">
+                    <h1 class="text-2xl font-bold mb-6">Dashboard Overview</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <i class="fas fa-users text-blue-500 text-2xl mr-4"></i>
+                                <div>
+                                    <p class="text-gray-500">Total Users</p>
+                                    <h3 class="text-xl font-bold">1,234</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <i class="fas fa-dollar-sign text-green-500 text-2xl mr-4"></i>
+                                <div>
+                                    <p class="text-gray-500">Revenue</p>
+                                    <h3 class="text-xl font-bold">$12,345</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-line text-purple-500 text-2xl mr-4"></i>
+                                <div>
+                                    <p class="text-gray-500">Growth</p>
+                                    <h3 class="text-xl font-bold">+15%</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <i class="fas fa-tasks text-yellow-500 text-2xl mr-4"></i>
+                                <div>
+                                    <p class="text-gray-500">Tasks</p>
+                                    <h3 class="text-xl font-bold">23</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Users Content -->
+                <div x-show="activePage === 'all-users'">
+                    <h1 class="text-2xl font-bold mb-6">All Users</h1>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p>This is the All Users page content</p>
+                    </div>
+                </div>
+
+                <!-- Add User Content -->
+                <div x-show="activePage === 'add-user'">
+                    <h1 class="text-2xl font-bold mb-6">Add User</h1>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p>This is the Add User page content</p>
+                    </div>
+                </div>
+
+                <!-- User Roles Content -->
+                <div x-show="activePage === 'user-roles'">
+                    <h1 class="text-2xl font-bold mb-6">User Roles</h1>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p>This is the User Roles page content</p>
+                    </div>
+                </div>
+
+                <!-- General Settings Content -->
+                <div x-show="activePage === 'general'">
+                    <h1 class="text-2xl font-bold mb-6">General Settings</h1>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p>This is the General Settings page content</p>
+                    </div>
+                </div>
+
+                <!-- Security Settings Content -->
+                <div x-show="activePage === 'security'">
+                    <h1 class="text-2xl font-bold mb-6">Security Settings</h1>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p>This is the Security Settings page content</p>
+                    </div>
+                </div>
+
+                <!-- Notifications Settings Content -->
+                <div x-show="activePage === 'notifications'">
+                    <h1 class="text-2xl font-bold mb-6">Notifications Settings</h1>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p>This is the Notifications Settings page content</p>
+                    </div>
+                </div>
+
+                <!-- Analytics Content -->
+                <div x-show="activePage === 'analytics'">
+                    <h1 class="text-2xl font-bold mb-6">Analytics</h1>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p>This is the Analytics page content</p>
+                    </div>
+                </div>
+
+                <!-- Logout Content -->
+                <div x-show="activePage === 'logout'">
+                    <h1 class="text-2xl font-bold mb-6">Logout</h1>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p>You have been logged out</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

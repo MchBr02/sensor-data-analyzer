@@ -4,7 +4,7 @@ import { MongoClient } from "https://deno.land/x/mongo/mod.ts";
 import "@std/dotenv/load";
 
 
-const MONGODB_ADMIN_USER = Deno.env.get("MONGODB_ADMIN_USER") || "admin";
+const MONGODB_ADMIN_USER = Deno.env.get("MONGODB_ADMIN_USER") || "user";
 const MONGODB_ADMIN_PASS = Deno.env.get("MONGODB_ADMIN_PASS") || "password";
 const MONGODB_HOST_ADRESS = Deno.env.get("MONGODB_HOST_ADRESS") || "localhost";
 const MONGODB_HOST_PORT = Deno.env.get("MONGODB_HOST_PORT") || "27017";
@@ -47,7 +47,9 @@ export async function saveToCollection(data: Record<string, unknown>, collection
                 { $set: data },
                 { upsert: true }
             );
-            console.log(`✅ Data upserted to collection "${collectionName}":`, result);
+            // console.log(`✅ Data upserted to collection "${collectionName}":`, result);
+            console.log(`✅ Data upserted to collection "${collectionName}"`);
+            // console.log(`${result}`);
         } else {
             // Regular insert if no _id field
             const insertResult = await collection.insertOne(data);

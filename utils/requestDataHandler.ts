@@ -53,7 +53,8 @@ async function saveHttpRequestDataToDatabase(requestData: Record<string, unknown
 
     // Save the HTTP request data as a separate sensor entry
     await saveToCollection(httpReqData, "sensorData");
-    console.log(`✅ HTTP request data saved to "sensorData" collection:`, httpReqData);
+    console.log(`✅ HTTP request data saved to "sensorData" collection`);
+    // console.log(`${httpReqData}`);
   } catch (error) {
     let errorMessage = "❌ Error saving HTTP request data:";
     if (error instanceof Error) {
@@ -104,8 +105,7 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
                   typeof item.name === "string" &&
                   item.name.trim() !== "" &&
                   "values" in item &&
-                  typeof item.values === "object" &&
-                  Object.keys(item.values).length > 0
+                  typeof item.values === "object"
               ) {
                   // Save the sensor information in the "sensors" collection
                   const sensorId = `${body.deviceId}-${item.name}`;
@@ -126,10 +126,11 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
                       sessionId: body.sessionId,
                       time: body.time || "No time provided",
                       timestamp: new Date().toISOString(),
-                      values: item.values,
+                      values: item.values
                   };
                   await saveToCollection(sensorData, "sensorData");
-                  console.log(`✅ Sensor data saved to "sensorData" collection:`, sensorData);
+                  console.log(`✅ Sensor data saved to "sensorData" collection`);
+                //   console.log(`${sensorData}`);
               } else {
                   console.warn("❌ Invalid or empty payload:", item);
               }
