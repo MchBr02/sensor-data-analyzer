@@ -1,14 +1,16 @@
+// ./islands/LiveRequestData.tsx
+
 import { useEffect, useState } from "preact/hooks";
 
 export default function LiveData() {
     const [data, setData] = useState({});
     const [connectionStatus, setConnectionStatus] = useState("Connecting...");
+    const [currentTime, setCurrentTime] = useState("");
 
     useEffect(() => {
         let socket: WebSocket;
 
         function connectWebSocket() {
-            // Use the window location to dynamically get the correct IP address
             const host = globalThis.location.host;
             const socketUrl = `ws://${host}/api/data`;
             console.log("🔗 Connecting to WebSocket at:", socketUrl);
@@ -21,15 +23,25 @@ export default function LiveData() {
             };
 
             socket.onmessage = (event) => {
-                const receivedData = JSON.parse(event.data);
-                setData(receivedData);
-                console.log("📥 Received new data:", receivedData);
+                try {
+                    console.log("📥 Raw WebSocket message received:", event.data);
+                    const receivedData = JSON.parse(event.data);
+                    if (receivedData.time) {
+                        setCurrentTime(receivedData.time);
+                        console.log("⏰ Received time update:", receivedData.time);
+                    } else {
+                        setData((prevData) => ({ ...prevData, ...receivedData }));
+                    }
+                    console.log("📥 Received new data:", receivedData);
+                } catch (error) {
+                    console.error("❌ Failed to parse WebSocket message:", error);
+                }
             };
 
             socket.onclose = () => {
                 setConnectionStatus("Disconnected");
                 console.log("❌ WebSocket connection closed. Attempting to reconnect...");
-                setTimeout(connectWebSocket, 1000); // Reconnect after 1 second
+                setTimeout(connectWebSocket, 1000);
             };
 
             socket.onerror = (error) => {
@@ -49,7 +61,7 @@ export default function LiveData() {
 
     return (
         <div>
-            <h2>Connection Status: {connectionStatus}</h2>
+            <h2>Connection Status: {connectionStatus}, Time: {currentTime}</h2>
             <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
     );

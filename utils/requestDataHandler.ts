@@ -4,12 +4,21 @@ import { ensureDir } from "https://deno.land/std/fs/mod.ts";
 
 import { saveToCollection } from "./database.ts";
 import { saveDeviceToDatabase, saveSensorToDatabase, saveSensorDataToDatabase } from "./database.ts";
+import { logSuccess, logError } from "./log.ts";
 
 let latestRequestData: Record<string, unknown> | null = null;
 
 const dataFolder = "./data";
 // Ensure the data folder exists
 await ensureDir(dataFolder);
+
+
+/**
+* Get the latest request data
+*/
+export function getLatestRequestData(): Record<string, unknown> | null {
+    return latestRequestData;
+}  
 
 
 /**
@@ -42,19 +51,36 @@ export async function RequestDataHandler(requestData: Record<string, unknown>): 
 
 
 /**
+ * Utility function to validate if an object is non-null and of a specific type
+ */
+function isNonNullObject(obj: unknown): obj is Record<string, unknown> {
+    return typeof obj === "object" && obj !== null;
+}
+
+/**
+ * Validate a single item from the payload
+ */
+function isValidPayloadItem(item: unknown): item is Record<string, unknown> {
+    return (
+        isNonNullObject(item) &&
+        typeof item.name === "string" &&
+        item.name.trim() !== "" &&
+        isNonNullObject(item.values)
+    );
+}
+
+/**
  * Utility function to validate the basic structure of the requestData
  */
 const validateBasicStructure = (requestData: Record<string, unknown>): boolean => {
+    if (!isNonNullObject(requestData.body)) return false;
+
+    const body = requestData.body;
     return (
-        typeof requestData.body === "object" &&
-        requestData.body !== null &&
-        "deviceId" in requestData.body &&
-        typeof requestData.body.deviceId === "string" &&
-        "sessionId" in requestData.body &&
-        typeof requestData.body.sessionId === "string" &&
-        "payload" in requestData.body &&
-        Array.isArray(requestData.body.payload) &&
-        requestData.body.payload.every(item => typeof item === "object" && item !== null)
+        typeof body.deviceId === "string" &&
+        typeof body.sessionId === "string" &&
+        Array.isArray(body.payload) &&
+        body.payload.every(isValidPayloadItem)
     );
 };
 
@@ -62,31 +88,36 @@ const validateBasicStructure = (requestData: Record<string, unknown>): boolean =
  * Save data to the correct collections based on the data structure
  */
 async function saveDataToDatabase(requestData: Record<string, unknown>): Promise<void> {
-  try {
-    // Validate the request body before proceeding
-    if (!validateBasicStructure(requestData)) {
-        throw new Error("Invalid data structure.");
-    }
+    try {
+        // Save raw request data for future analysis
+        await saveToCollection(requestData, "requestData");
+        logSuccess("Raw request data saved to 'requestData' collection.");
 
-    // Directly assign the body from requestData after validation
-    const body = requestData.body as Record<string, unknown>;
+        // Validate the request body before proceeding
+        if (!validateBasicStructure(requestData)) {
+            throw new Error("Invalid data structure.");
+        }
 
-    // Type assertion for payload to ensure it is an array of objects
-    const payload = body.payload as Array<Record<string, unknown>>;
-    
+        // Directly assign the body from requestData after validation
+        const body = requestData.body as Record<string, unknown>;
+        const payload = body.payload as Array<Record<string, unknown>>;
 
-    // Prepare device information
-    const deviceInfo = {
-        _id: body.deviceId,
-        name: body.deviceName || "Unknown Device",
-        description: body.deviceDescription || "No description",
-        createdAt: new Date().toISOString(),
-    };
-    // Save the device information in the "devices" collection
-    await saveDeviceToDatabase(deviceInfo);
-    console.log(`✅ Device "${body.deviceId}" saved to "devices" collection`);
+        // Prepare device information
+        const deviceInfo = {
+            _id: body.deviceId,
+            name: body.deviceName || "Unknown Device",
+            description: body.deviceDescription || "No description",
+            createdAt: new Date().toISOString(),
+        };
+        await saveDeviceToDatabase(deviceInfo);
+        logSuccess(`Device "${body.deviceId}" saved to "devices" collection`);
 
         for (const item of payload) {
+            if (!isValidPayloadItem(item)) {
+                logError(`Invalid payload item: ${JSON.stringify(item)}`);
+                continue;
+            }
+
             const sensorId = `${body.deviceId}-${item.name}`;
             const sensorInfo = {
                 _id: sensorId,
@@ -95,55 +126,29 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
                 description: `Sensor of type ${item.name} on device ${body.deviceId}`,
                 createdAt: new Date().toISOString(),
             };
-            // Save the sensor information in the "sensors" collection
             await saveSensorToDatabase(sensorInfo);
-            console.log(`✅ Sensor "${sensorId}" saved to "sensors" collection`);
+            logSuccess(`Sensor "${sensorId}" saved to "sensors" collection`);
 
             // Access the time field correctly within each item
             const timeValue = item.time ? String(item.time) : "No time provided";
 
-            // Save the sensor data in the "sensorData" collection, including sessionId
             const sensorData = {
                 sensorId: sensorId,
                 deviceId: body.deviceId,
                 sessionId: body.sessionId,
-                time: timeValue || "No time provided",
+                time: timeValue,
                 timestamp: new Date().toISOString(),
-                values: item.values
+                values: item.values,
             };
-            // Save the sensor data in the "sensorData" collection
             await saveSensorDataToDatabase(sensorData);
-            console.log(`✅ Sensor data saved to "sensorData" collection`);
+            logSuccess(`Sensor data for "${sensorId}" saved to "sensorData" collection`);
         }
-
-    
-        // // Collect all headers into a key-value pair object
-        // const headers = requestData.headers as Record<string, string>;
-
-        // // Prepare the HTTP sensor data object
-        // const httpReqData = {
-        // sensorId: "request-headers-data",
-        // deviceId: body.deviceId,
-        // sessionId: body.sessionId,
-        // timestamp: new Date().toISOString(),
-        // values: headers,
-        // };
-        // await saveSensorDataToDatabase(httpReqData);
-        // console.log(`✅ Request data saved to "sensorData" collection`);
-
-  } catch (error) {
-      let errorMessage = "❌ Error handling request data:";
-      if (error instanceof Error) {
-          errorMessage = error.message;
-      }
-      console.error("❌ Error saving JSON data:", errorMessage);
-      throw new Error("Failed to handle JSON data");
-  }
-}
-
-/**
-* Get the latest request data
-*/
-export function getLatestRequestData(): Record<string, unknown> | null {
-  return latestRequestData;
+    } catch (error) {
+        let errorMessage = "Error handling request data:";
+        if (error instanceof Error) {
+            errorMessage = error.message;
+        }
+        logError(`Saving JSON data failed: ${errorMessage}`);
+        throw new Error("Failed to handle JSON data");
+    }
 }
