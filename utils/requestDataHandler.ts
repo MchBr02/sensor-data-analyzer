@@ -3,6 +3,7 @@
 import { ensureDir } from "https://deno.land/std/fs/mod.ts";
 
 import { saveToCollection } from "./database.ts";
+import { saveDeviceToDatabase, saveSensorToDatabase, saveSensorDataToDatabase } from "./database.ts";
 
 let latestRequestData: Record<string, unknown> | null = null;
 
@@ -10,143 +11,6 @@ const dataFolder = "./data";
 // Ensure the data folder exists
 await ensureDir(dataFolder);
 
-
-
-/**
- * Utility function to safely extract the body from requestData
- */
-const getRequestBody = (requestData: Record<string, unknown>): Record<string, unknown> => {
-  if (
-      requestData.body &&
-      typeof requestData.body === "object" &&
-      requestData.body !== null
-  ) {
-      return requestData.body as Record<string, unknown>;
-  }
-  throw new Error("Invalid or missing request body");
-};
-
-
-
-/**
- * Save HTTP request data as a separate sensor entry in the sensorData collection
- */
-async function saveHttpRequestDataToDatabase(requestData: Record<string, unknown>): Promise<void> {
-  try {
-    const body = getRequestBody(requestData);
-
-    const deviceId = body.deviceId as string;
-    const sessionId = body.sessionId as string;
-
-    // Collect all headers into a key-value pair object
-    const headers = requestData.headers as Record<string, string>;
-
-    // Prepare the HTTP sensor data object
-    const httpReqData = {
-      sensorId: "http-request-data",
-      deviceId: deviceId,
-      sessionId: sessionId,
-      time: body.time || "No time provided",
-      timestamp: new Date().toISOString(),
-      values: headers,
-    };
-
-    // Save the HTTP request data as a separate sensor entry
-    await saveToCollection(httpReqData, "sensorData");
-    console.log(`✅ HTTP request data saved to "sensorData" collection`);
-    // console.log(`${httpReqData}`);
-  } catch (error) {
-    let errorMessage = "❌ Error saving HTTP request data:";
-    if (error instanceof Error) {
-        errorMessage = error.message;
-    }
-    console.error(errorMessage);
-    throw new Error("Failed to save HTTP request data");
-  }
-}
-
-
-
-/**
- * Save data to the correct collections based on the data structure
- */
-async function saveDataToDatabase(requestData: Record<string, unknown>): Promise<void> {
-  try {
-    const body = getRequestBody(requestData);
-
-    // Validate the basic structure
-    if (
-        "deviceId" in body &&
-        typeof body.deviceId === "string" &&
-        "sessionId" in body &&
-        typeof body.sessionId === "string" &&
-        Array.isArray(body.payload)
-    ) {
-          const body = requestData.body as any;
-
-          // Save the device information in the "devices" collection
-          const deviceInfo = {
-              _id: body.deviceId,
-              name: body.deviceName || "Unknown Device",
-              description: body.deviceDescription || "No description",
-              createdAt: new Date().toISOString(),
-          };
-          await saveToCollection(deviceInfo, "devices");
-          console.log(`✅ Device "${body.deviceId}" saved to "devices" collection`);
-
-          // Save HTTP request data as a separate sensorData entry
-          await saveHttpRequestDataToDatabase(requestData);
-
-          for (const item of body.payload) {
-              if (
-                  item &&
-                  typeof item === "object" &&
-                  "name" in item &&
-                  typeof item.name === "string" &&
-                  item.name.trim() !== "" &&
-                  "values" in item &&
-                  typeof item.values === "object"
-              ) {
-                  // Save the sensor information in the "sensors" collection
-                  const sensorId = `${body.deviceId}-${item.name}`;
-                  const sensorInfo = {
-                      _id: sensorId,
-                      deviceId: body.deviceId,
-                      type: item.name,
-                      description: `Sensor of type ${item.name} on device ${body.deviceId}`,
-                      createdAt: new Date().toISOString(),
-                  };
-                  await saveToCollection(sensorInfo, "sensors");
-                  console.log(`✅ Sensor "${sensorId}" saved to "sensors" collection`);
-
-                  // Save the sensor data in the "sensorData" collection, including sessionId
-                  const sensorData = {
-                      sensorId: sensorId,
-                      deviceId: body.deviceId,
-                      sessionId: body.sessionId,
-                      time: body.time || "No time provided",
-                      timestamp: new Date().toISOString(),
-                      values: item.values
-                  };
-                  await saveToCollection(sensorData, "sensorData");
-                  console.log(`✅ Sensor data saved to "sensorData" collection`);
-                //   console.log(`${sensorData}`);
-              } else {
-                  console.warn("❌ Invalid or empty payload:", item);
-              }
-          }
-      } else {
-          console.warn("❌ Invalid data format:", requestData.body);
-      }
-  } catch (error) {
-      let errorMessage = "❌ Error handling request data:";
-      if (error instanceof Error) {
-          errorMessage = error.message;
-      }
-      console.error("❌ Error saving JSON data:", errorMessage);
-      throw new Error("Failed to handle JSON data");
-  }
-}
 
 /**
  * Main function to handle and save the data from the request
@@ -172,6 +36,108 @@ export async function RequestDataHandler(requestData: Record<string, unknown>): 
       }
       console.error(errorMessage);
       return new Response("❌ Failed to process the request data: " + errorMessage, { status: 500 });
+  }
+}
+
+
+
+/**
+ * Utility function to validate the basic structure of the requestData
+ */
+const validateBasicStructure = (requestData: Record<string, unknown>): boolean => {
+    return (
+        typeof requestData.body === "object" &&
+        requestData.body !== null &&
+        "deviceId" in requestData.body &&
+        typeof requestData.body.deviceId === "string" &&
+        "sessionId" in requestData.body &&
+        typeof requestData.body.sessionId === "string" &&
+        "payload" in requestData.body &&
+        Array.isArray(requestData.body.payload) &&
+        requestData.body.payload.every(item => typeof item === "object" && item !== null)
+    );
+};
+
+/**
+ * Save data to the correct collections based on the data structure
+ */
+async function saveDataToDatabase(requestData: Record<string, unknown>): Promise<void> {
+  try {
+    // Validate the request body before proceeding
+    if (!validateBasicStructure(requestData)) {
+        throw new Error("Invalid data structure.");
+    }
+
+    // Directly assign the body from requestData after validation
+    const body = requestData.body as Record<string, unknown>;
+
+    // Type assertion for payload to ensure it is an array of objects
+    const payload = body.payload as Array<Record<string, unknown>>;
+    
+
+    // Prepare device information
+    const deviceInfo = {
+        _id: body.deviceId,
+        name: body.deviceName || "Unknown Device",
+        description: body.deviceDescription || "No description",
+        createdAt: new Date().toISOString(),
+    };
+    // Save the device information in the "devices" collection
+    await saveDeviceToDatabase(deviceInfo);
+    console.log(`✅ Device "${body.deviceId}" saved to "devices" collection`);
+
+        for (const item of payload) {
+            const sensorId = `${body.deviceId}-${item.name}`;
+            const sensorInfo = {
+                _id: sensorId,
+                deviceId: body.deviceId,
+                type: item.name,
+                description: `Sensor of type ${item.name} on device ${body.deviceId}`,
+                createdAt: new Date().toISOString(),
+            };
+            // Save the sensor information in the "sensors" collection
+            await saveSensorToDatabase(sensorInfo);
+            console.log(`✅ Sensor "${sensorId}" saved to "sensors" collection`);
+
+            // Access the time field correctly within each item
+            const timeValue = item.time ? String(item.time) : "No time provided";
+
+            // Save the sensor data in the "sensorData" collection, including sessionId
+            const sensorData = {
+                sensorId: sensorId,
+                deviceId: body.deviceId,
+                sessionId: body.sessionId,
+                time: timeValue || "No time provided",
+                timestamp: new Date().toISOString(),
+                values: item.values
+            };
+            // Save the sensor data in the "sensorData" collection
+            await saveSensorDataToDatabase(sensorData);
+            console.log(`✅ Sensor data saved to "sensorData" collection`);
+        }
+
+    
+        // // Collect all headers into a key-value pair object
+        // const headers = requestData.headers as Record<string, string>;
+
+        // // Prepare the HTTP sensor data object
+        // const httpReqData = {
+        // sensorId: "request-headers-data",
+        // deviceId: body.deviceId,
+        // sessionId: body.sessionId,
+        // timestamp: new Date().toISOString(),
+        // values: headers,
+        // };
+        // await saveSensorDataToDatabase(httpReqData);
+        // console.log(`✅ Request data saved to "sensorData" collection`);
+
+  } catch (error) {
+      let errorMessage = "❌ Error handling request data:";
+      if (error instanceof Error) {
+          errorMessage = error.message;
+      }
+      console.error("❌ Error saving JSON data:", errorMessage);
+      throw new Error("Failed to handle JSON data");
   }
 }
 
