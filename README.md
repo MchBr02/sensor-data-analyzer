@@ -28,7 +28,7 @@ You need **one of the following setups**:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/mr02/sensor-data-analyzer.git
+git clone https://github.com/MchBr02/sensor-data-analyzer.git
 cd sensor-data-analyzer
 ```
 
