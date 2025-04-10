@@ -2,10 +2,12 @@
 
 A Deno Fresh.js application that collects sensor data, stores it in a MongoDB database, and provides real-time charts via WebSockets and Chart.js.
 
+---
+
 ## 🚀 Features
 
 - 📡 Real-time sensor data display
-- 🧠 Charts for data analysis using Chart.js
+- 📊 Charts for data analysis using Chart.js
 - 🗄️ MongoDB-based data storage
 - 🔌 WebSocket support for live updates
 - 🐳 Dockerized for easy deployment
@@ -14,13 +16,14 @@ A Deno Fresh.js application that collects sensor data, stores it in a MongoDB da
 
 ## 📦 Prerequisites
 
-You need **either** of the following setups:
+You need **one of the following setups**:
 
-- **Docker + Docker Compose** (recommended for deployment)
-- **Deno** (for local development)
+- ✅ Docker + Docker Compose (recommended for deployment)
+- 🧪 Deno (for local development)
 
+---
 
-## 🔧 Getting Started (deno)
+## 🔧 Getting Started (Deno)
 
 ### 1. Clone the Repository
 
@@ -29,13 +32,17 @@ git clone https://github.com/mr02/sensor-data-analyzer.git
 cd sensor-data-analyzer
 ```
 
-### 2. Setup Environment Variables
-Create a `.env` file in the project root directory:
+### 2. Set Up Environment Variables
+
+Create a `.env` file based on the example:
+
 ```bash
 cp .env.example .env
 ```
-Edit the `.env` file to fit your configuration:
-```
+
+Then edit `.env`:
+
+```env
 # MongoDB Configuration
 MONGODB_HOST_ADRESS=mongo
 MONGODB_HOST_PORT=27017
@@ -53,7 +60,8 @@ MONGODB_ADMIN_PASS=password
 deno task start
 ```
 
-Than open in your browser:
+Then open in your browser:
+
 ```
 http://localhost:8000/data/chart
 ```
@@ -63,29 +71,48 @@ http://localhost:8000/data/chart
 ## 🐳 Run with Docker
 
 ### Option 1: Pull from Docker Hub
-Docker Pull Command:
-```
-docker pull mr02/sensor-data-analyzer
+
+```bash
+docker pull mr02/sensor-data-analyzer:latest
 ```
 
-Then run the container:
-```
+Then run it:
+
+```bash
 docker run -d -p 8000:8000 --name sensor-data-analyzer mr02/sensor-data-analyzer:latest
 ```
 
-## Option 2: Build Locally with Docker Compose
-```
+> ⚠️ Ensure a MongoDB instance is running and accessible (either as another container or hosted).
+
+---
+
+### Option 2: Build and Run with Docker Compose
+
+```bash
 docker-compose up --build
 ```
 
-## 📺 View Live Data Stream
+> This will run both the app and MongoDB in connected containers.
 
-Open your browser and navigate to:
+---
+
+## 📺 View the Live Data Stream
+
+Open your browser and visit:
+
 ```
 http://localhost:8000/data/chart
 ```
 
+You'll see:
+- 📦 Raw device data
+- 📈 Real-time sensor graphs
+
 ---
+
+## 📤 Sending Sensor Data (Example)
+
+Send a POST request using `curl`:
 
 ## Sending Sensor Data (Example)
 Use `curl` to send a POST request:
@@ -115,7 +142,9 @@ curl -X POST -H "Content-Type: application/json" -d '{
 }' http://localhost:8000/api/data
 ```
 
+
 ---
 
-## License
-This project is licensed under the [MIT license](LICENSE.md).
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE.md).
