@@ -2,7 +2,7 @@ version: '3.9'
 services:
   deno-app:
     build: .
-    container_name: sensor-data-analyzer
+    container_name: mr02/sensor-data-analyzer
     ports:
       - "8000:8000"
     environment:
@@ -19,10 +19,10 @@ services:
     command: ["deno", "task", "start"]
   
   mongo:
-    image: mongo:6.0
+    image: mongo
     container_name: mongo-db
     ports:
-      - ${MONGODB_HOST_PORT}
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ADMIN_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PASS}
