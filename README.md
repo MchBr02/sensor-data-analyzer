@@ -2,31 +2,34 @@
 
 A Deno Fresh.js application that collects sensor data, stores it in a MongoDB database, and provides real-time charts via WebSockets and Chart.js.
 
-## Features
-- Real-time sensor data display
-- Data storage using MongoDB
-- WebSocket support for live updates
-- Dockerized for easy deployment
+## 🚀 Features
+
+- 📡 Real-time sensor data display
+- 🧠 Charts for data analysis using Chart.js
+- 🗄️ MongoDB-based data storage
+- 🔌 WebSocket support for live updates
+- 🐳 Dockerized for easy deployment
 
 ---
 
-## Prerequisites
-- Docker and Docker Compose
+## 📦 Prerequisites
 
-or
-- Deno (for local development)
+You need **either** of the following setups:
 
----
+- **Docker + Docker Compose** (recommended for deployment)
+- **Deno** (for local development)
 
-## Getting Started
 
-### Clone the Repository
+## 🔧 Getting Started (deno)
+
+### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/mr02/sensor-data-analyzer.git
 cd sensor-data-analyzer
 ```
 
-### Setup Environment Variables
+### 2. Setup Environment Variables
 Create a `.env` file in the project root directory:
 ```bash
 cp .env.example .env
@@ -44,25 +47,39 @@ MONGODB_ADMIN_PASS=password
 
 ---
 
-## Running the Project Locally
+## 🧪 Run Locally with Deno
 
-### Install Dependencies
 ```bash
 deno task start
 ```
 
+Than open in your browser:
+```
+http://localhost:8000/data/chart
+```
+
 ---
 
-## Docker Deployment
+## 🐳 Run with Docker
 
-### Pull from Docker Hub
+### Option 1: Pull from Docker Hub
 Docker Pull Command:
 ```
 docker pull mr02/sensor-data-analyzer
 ```
----
 
-## Viev live data stream
+Then run the container:
+```
+docker run -d -p 8000:8000 --name sensor-data-analyzer mr02/sensor-data-analyzer:latest
+```
+
+## Option 2: Build Locally with Docker Compose
+```
+docker-compose up --build
+```
+
+## 📺 View Live Data Stream
+
 Open your browser and navigate to:
 ```
 http://localhost:8000/data/chart
@@ -96,18 +113,6 @@ curl -X POST -H "Content-Type: application/json" -d '{
     }
   ]
 }' http://localhost:8000/api/data
-```
-
----
-
-### Pulling from Docker Hub
-```bash
-docker pull mr02/sensor-data-analyzer:latest
-```
-
-### Running the Docker Container
-```bash
-docker run -d -p 8000:8000 --name sensor-analyzer mr02/sensor-data-analyzer:latest
 ```
 
 ---
