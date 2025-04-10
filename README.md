@@ -1,6 +1,6 @@
 # Sensor Data Analyzer
 
-A Deno Fresh.js application that collects and analyzes sensor data, stores it in a MongoDB database, and provides real-time updates via WebSockets.
+A Deno Fresh.js application that collects sensor data, stores it in a MongoDB database, and provides real-time charts via WebSockets and Chart.js.
 
 ## Features
 - Real-time sensor data display
@@ -12,6 +12,8 @@ A Deno Fresh.js application that collects and analyzes sensor data, stores it in
 
 ## Prerequisites
 - Docker and Docker Compose
+
+or
 - Deno (for local development)
 
 ---
@@ -49,17 +51,6 @@ MONGODB_ADMIN_PASS=password
 deno task start
 ```
 
-### Start the Deno App
-```bash
-deno run -A --watch=static/,routes/ dev.ts
-```
-
-### Access the Application
-Open your browser and navigate to:
-```
-http://localhost:8000/data
-```
-
 ---
 
 ## Docker Deployment
@@ -69,24 +60,12 @@ Docker Pull Command:
 ```
 docker pull mr02/sensor-data-analyzer
 ```
+---
 
-or
-
-### Building and Running with Docker Compose
-To build and start the containers:
-```bash
-docker-compose up --build -d
-```
-
-### Check Running Containers
-```bash
-docker-compose ps
-```
-
-### Access the Application
+## Viev live data stream
 Open your browser and navigate to:
 ```
-http://localhost:8000/data
+http://localhost:8000/data/chart
 ```
 
 ---
@@ -121,10 +100,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 ---
 
-## Docker Image Sharing
-
 ### Pulling from Docker Hub
-Replace `mr02` with your Docker Hub username if necessary.
 ```bash
 docker pull mr02/sensor-data-analyzer:latest
 ```
@@ -136,56 +112,5 @@ docker run -d -p 8000:8000 --name sensor-analyzer mr02/sensor-data-analyzer:late
 
 ---
 
-## Stopping and Removing Containers
-
-### Stop Containers
-```bash
-docker-compose down
-```
-
-### Clean Up Volumes
-To remove data stored in volumes:
-```bash
-docker volume prune -f
-```
-
----
-
-## Logs and Debugging
-
-### View Logs from the Deno Container
-```bash
-docker logs -f sensor-data-analyzer
-```
-
-### View MongoDB Logs
-```bash
-docker logs -f mongo-db
-```
-
----
-
-## Troubleshooting
-
-### WebSocket Connection Issues
-- Ensure the WebSocket URL in the client matches the server's IP address.
-- Check the network configuration between devices.
-
-### MongoDB Connection Issues
-- Verify the database credentials in the `.env` file.
-- Ensure the MongoDB container is running:
-  ```bash
-  docker-compose ps
-  ```
-
-### Restarting the Project
-If you encounter issues, try restarting the containers:
-```bash
-docker-compose down -v
-docker-compose up --build -d
-```
-
----
-
 ## License
-This project is licensed under the MIT License.
+This project is licensed under the [MIT license](LICENSE.md).

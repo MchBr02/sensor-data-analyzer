@@ -71,12 +71,12 @@ export async function saveToCollection(data: Record<string, unknown>, collection
 
         if ("_id" in data) {
             // Use upsert: true to update or insert the document
-            const result = await collection.updateOne(
+            const _result = await collection.updateOne(
                 { _id: data._id },  // Find document by its unique _id.
                 { $set: data },      // Update the document with new data.
                 { upsert: true }     // Enable upsert (update or insert).
             );
-            // console.log(`✅ Data upserted to collection "${collectionName}":`, result);
+            // console.log(`✅ Data upserted to collection "${collectionName}":`, _result);
             console.log(`✅ Data upserted to collection "${collectionName}", data._id: "${data._id}"`);
             // console.log(`${result}`);
         } else {

@@ -5,7 +5,6 @@ import { useEffect, useState } from "preact/hooks";
 export default function LiveData() {
     const [data, setData] = useState({});
     const [connectionStatus, setConnectionStatus] = useState("Connecting...");
-    const [currentTime, setCurrentTime] = useState("");
 
     useEffect(() => {
         let socket: WebSocket;
@@ -26,12 +25,7 @@ export default function LiveData() {
                 try {
                     console.log("📥 Raw WebSocket message received:", event.data);
                     const receivedData = JSON.parse(event.data);
-                    if (receivedData.time) {
-                        setCurrentTime(receivedData.time);
-                        console.log("⏰ Received time update:", receivedData.time);
-                    } else {
-                        setData((prevData) => ({ ...prevData, ...receivedData }));
-                    }
+                    setData((prevData) => ({ ...prevData, ...receivedData }));
                     console.log("📥 Received new data:", receivedData);
                 } catch (error) {
                     console.error("❌ Failed to parse WebSocket message:", error);
@@ -61,7 +55,7 @@ export default function LiveData() {
 
     return (
         <div>
-            <h2>Connection Status: {connectionStatus}, Time: {currentTime}</h2>
+            <h2>Connection Status: {connectionStatus}</h2>
             <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
     );

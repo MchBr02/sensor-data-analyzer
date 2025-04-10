@@ -1,16 +1,11 @@
 // utils/sensorDataHandler.ts
 
-import { ensureDir } from "https://deno.land/std/fs/mod.ts";
-
 import { saveToCollection } from "./database.ts";
 import { saveDeviceToDatabase, saveSensorToDatabase, saveSensorDataToDatabase } from "./database.ts";
 import { logSuccess, logError } from "./log.ts";
+import { validateBasicStructure, isValidPayloadItem } from "./validDataStructure.ts";
 
 let latestRequestData: Record<string, unknown> | null = null;
-
-const dataFolder = "./data";
-// Ensure the data folder exists
-await ensureDir(dataFolder);
 
 
 /**
@@ -47,42 +42,6 @@ export async function RequestDataHandler(requestData: Record<string, unknown>): 
       return new Response("❌ Failed to process the request data: " + errorMessage, { status: 500 });
   }
 }
-
-
-
-/**
- * Utility function to validate if an object is non-null and of a specific type
- */
-function isNonNullObject(obj: unknown): obj is Record<string, unknown> {
-    return typeof obj === "object" && obj !== null;
-}
-
-/**
- * Validate a single item from the payload
- */
-function isValidPayloadItem(item: unknown): item is Record<string, unknown> {
-    return (
-        isNonNullObject(item) &&
-        typeof item.name === "string" &&
-        item.name.trim() !== "" &&
-        isNonNullObject(item.values)
-    );
-}
-
-/**
- * Utility function to validate the basic structure of the requestData
- */
-const validateBasicStructure = (requestData: Record<string, unknown>): boolean => {
-    if (!isNonNullObject(requestData.body)) return false;
-
-    const body = requestData.body;
-    return (
-        typeof body.deviceId === "string" &&
-        typeof body.sessionId === "string" &&
-        Array.isArray(body.payload) &&
-        body.payload.every(isValidPayloadItem)
-    );
-};
 
 /**
  * Save data to the correct collections based on the data structure
