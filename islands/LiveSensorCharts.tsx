@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-
 import Chart from "https://esm.sh/stable/chart.js@4.4.0/auto?target=es2022";
 
 type SensorEntry = { time: number } & Record<string, unknown>;
 type DeviceData = Record<string, Record<string, SensorEntry[]>>;
+type SensorSelection = Record<string, string>; // key: `${deviceId}-${sensorName}`, value: selected field
 
 export default function LiveSensorCharts() {
   const [devices, setDevices] = useState<DeviceData>({});
   const [status, setStatus] = useState("Connecting...");
+  const [selectedFields, setSelectedFields] = useState<SensorSelection>({});
   const chartRefs = useRef<Record<string, Chart>>({});
 
   useEffect(() => {
@@ -52,27 +53,27 @@ export default function LiveSensorCharts() {
     return () => socket.close();
   }, []);
 
-  // After device/sensor updates, render or update charts
+  // Update charts when devices or selectedFields change
   useEffect(() => {
     Object.entries(devices).forEach(([deviceId, sensors]) => {
       Object.entries(sensors).forEach(([sensorName, entries]) => {
         const canvasId = `${deviceId}-${sensorName}`;
         const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
-
         if (!canvas) return;
 
         const labels = entries.map((entry) =>
           new Date(Number(entry.time) / 1e6).toLocaleTimeString()
         );
-        const values = entries.map((entry) => {
-          const valueKeys = Object.keys(entry).filter((k) => k !== "time");
-          return entry[valueKeys[0]] as number;
-        });
 
-        const datasetLabel = `${deviceId} - ${sensorName}`;
+        const selectedKey = selectedFields[canvasId] || Object.keys(entries[0] ?? {}).find(k => k !== "time");
+        if (!selectedKey) return;
+
+        const values = entries.map((entry) => Number(entry[selectedKey]));
+        const datasetLabel = `${deviceId} - ${sensorName} (${selectedKey})`;
 
         if (chartRefs.current[canvasId]) {
           chartRefs.current[canvasId].data.labels = labels;
+          chartRefs.current[canvasId].data.datasets[0].label = datasetLabel;
           chartRefs.current[canvasId].data.datasets[0].data = values;
           chartRefs.current[canvasId].update();
         } else {
@@ -98,7 +99,7 @@ export default function LiveSensorCharts() {
         }
       });
     });
-  }, [devices]);
+  }, [devices, selectedFields]);
 
   return (
     <div>
@@ -106,11 +107,33 @@ export default function LiveSensorCharts() {
       {Object.entries(devices).map(([deviceId, sensors]) => (
         <div class="mb-10" key={deviceId}>
           <h3 class="text-xl mb-2">Device: {deviceId}</h3>
-          {Object.entries(sensors).map(([sensorName]) => {
+          {Object.entries(sensors).map(([sensorName, entries]) => {
             const canvasId = `${deviceId}-${sensorName}`;
+            const fieldOptions = Object.keys(entries[0] ?? {}).filter((k) => k !== "time" && typeof entries[0][k] !== "string");
+            const selectedKey = selectedFields[canvasId] || fieldOptions[0];
+
             return (
-              <div class="mb-4" key={canvasId}>
+              <div class="mb-6" key={canvasId}>
                 <h4 class="text-md mb-1">{sensorName}</h4>
+                <label class="block text-sm mb-1">
+                  Select field to display:
+                  <select
+                    class="ml-2 px-2 py-1 border rounded"
+                    value={selectedKey}
+                    onChange={(e) =>
+                      setSelectedFields((prev) => ({
+                        ...prev,
+                        [canvasId]: (e.target as HTMLSelectElement).value,
+                      }))
+                    }
+                  >
+                    {fieldOptions.map((field) => (
+                      <option key={field} value={field}>
+                        {field}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <canvas id={canvasId} height="150" />
               </div>
             );
