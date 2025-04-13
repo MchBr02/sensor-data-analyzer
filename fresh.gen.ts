@@ -10,9 +10,7 @@ import * as $api_joke from "./routes/api/joke.ts";
 import * as $dashboard_index from "./routes/dashboard/index.tsx";
 import * as $data_chart from "./routes/data/chart.tsx";
 import * as $data_index from "./routes/data/index.tsx";
-import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
-import * as $Counter from "./islands/Counter.tsx";
 import * as $LiveDeviceData from "./islands/LiveDeviceData.tsx";
 import * as $LiveRequestData from "./islands/LiveRequestData.tsx";
 import * as $LiveSensorCharts from "./islands/LiveSensorCharts.tsx";
@@ -28,11 +26,9 @@ const manifest = {
     "./routes/dashboard/index.tsx": $dashboard_index,
     "./routes/data/chart.tsx": $data_chart,
     "./routes/data/index.tsx": $data_index,
-    "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
   },
   islands: {
-    "./islands/Counter.tsx": $Counter,
     "./islands/LiveDeviceData.tsx": $LiveDeviceData,
     "./islands/LiveRequestData.tsx": $LiveRequestData,
     "./islands/LiveSensorCharts.tsx": $LiveSensorCharts,
