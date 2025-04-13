@@ -1,3 +1,6 @@
+// ./routes/index.tsx
+
+import ListPages from "../components/listPages.tsx";
 
 export default function Home() {
   return (
@@ -10,10 +13,11 @@ export default function Home() {
           height="128"
           alt="the Fresh logo: a sliced lemon dripping with juice"
         />
-        <h1 class="text-4xl font-bold">Welcome to Fresh</h1>
+        <h1 class="text-4xl font-bold">Sensor data analyzer</h1>
+        <p class="my-4">Check out our current tools:</p>
+        <ListPages />
         <p class="my-4">
-          Try updating this message in the
-          <code class="mx-2">./routes/index.tsx</code> file, and refresh.
+          Page in development ⚙️.
         </p>
       </div>
     </div>
