@@ -16,9 +16,12 @@ EXPOSE 8000
 # Set necessary environment variables
 ENV DENO_INSTALL=/deno
 ENV PATH=$DENO_INSTALL/bin:$PATH
+ENV DENO_NODE_COMPAT=true
+ENV DENO_UNSTABLE_NPM=true
 
 # Cache dependencies
 RUN deno cache dev.ts
+RUN deno cache deps.ts
 
 # Run the application
 CMD ["deno", "task", "start"]

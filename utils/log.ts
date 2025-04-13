@@ -1,13 +1,24 @@
-/**
- * Log success message in a consistent format
- */
-export function logSuccess(message: string): void {
-    console.log(`✅ ${message}`);
-}
+type LogType = "info" | "success" | "error" | "debug" | "warn";
 
-/**
- * Log error message in a consistent format
- */
-export function logError(message: string): void {
-    console.error(`❌ ${message}`);
+export function log(message: string, type: LogType = "info"): void {
+  const prefixMap: Record<LogType, string> = {
+    info: "ℹ️",
+    success: "✅",
+    error: "❌",
+    debug: "🐛",
+    warn: "⚠️",
+  };
+
+  const logFnMap: Record<LogType, (...args: any[]) => void> = {
+    info: console.log,
+    success: console.log,
+    error: console.error,
+    debug: console.debug,
+    warn: console.warn,
+  };
+
+  const prefix = prefixMap[type];
+  const logFn = logFnMap[type];
+
+  logFn(`${prefix} ${message}`);
 }

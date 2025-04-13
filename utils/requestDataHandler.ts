@@ -2,7 +2,7 @@
 
 import { saveToCollection } from "./database.ts";
 import { saveDeviceToDatabase, saveSensorToDatabase, saveSensorDataToDatabase } from "./database.ts";
-import { logSuccess, logError } from "./log.ts";
+import { log } from "./log.ts";
 import { validateBasicStructure, isValidPayloadItem } from "./validDataStructure.ts";
 
 let latestRequestData: Record<string, unknown> | null = null;
@@ -50,7 +50,7 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
     try {
         // Save raw request data for future analysis
         await saveToCollection(requestData, "requestData");
-        logSuccess("Raw request data saved to 'requestData' collection.");
+        log("Raw request data saved to 'requestData' collection.");
 
         // Validate the request body before proceeding
         if (!validateBasicStructure(requestData)) {
@@ -69,11 +69,11 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
             createdAt: new Date().toISOString(),
         };
         await saveDeviceToDatabase(deviceInfo);
-        logSuccess(`Device "${body.deviceId}" saved to "devices" collection`);
+        log(`Device "${body.deviceId}" saved to "devices" collection`);
 
         for (const item of payload) {
             if (!isValidPayloadItem(item)) {
-                logError(`Invalid payload item: ${JSON.stringify(item)}`);
+                log(`Invalid payload item: ${JSON.stringify(item)}`);
                 continue;
             }
 
@@ -86,7 +86,7 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
                 createdAt: new Date().toISOString(),
             };
             await saveSensorToDatabase(sensorInfo);
-            logSuccess(`Sensor "${sensorId}" saved to "sensors" collection`);
+            log(`Sensor "${sensorId}" saved to "sensors" collection`);
 
             // Access the time field correctly within each item
             const timeValue = item.time ? String(item.time) : "No time provided";
@@ -100,14 +100,14 @@ async function saveDataToDatabase(requestData: Record<string, unknown>): Promise
                 values: item.values,
             };
             await saveSensorDataToDatabase(sensorData);
-            logSuccess(`Sensor data for "${sensorId}" saved to "sensorData" collection`);
+            log(`Sensor data for "${sensorId}" saved to "sensorData" collection`);
         }
     } catch (error) {
         let errorMessage = "Error handling request data:";
         if (error instanceof Error) {
             errorMessage = error.message;
         }
-        logError(`Saving JSON data failed: ${errorMessage}`);
+        log(`Saving JSON data failed: ${errorMessage}`);
         throw new Error("Failed to handle JSON data");
     }
 }

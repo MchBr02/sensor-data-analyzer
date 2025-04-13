@@ -1,5 +1,7 @@
 // ./utils/websocket.ts
 
+import { log } from "./log.ts";
+
 export class WebSocketManager {
     private clients: Set<WebSocket>;
     private isBroadcasting: boolean;
@@ -11,24 +13,24 @@ export class WebSocketManager {
 
     addClient(socket: WebSocket) {
         this.clients.add(socket);
-        console.log("🌐 Client added. Total clients:", this.clients.size);
+        log(`🌐 Client added. Total clients: "${this.clients.size}"`);
     }
 
     removeClient(socket: WebSocket) {
         this.clients.delete(socket);
-        console.log("❌ Client removed. Total clients:", this.clients.size);
+        log(`❌ Client removed. Total clients: "${this.clients.size}"`);
     }
 
     broadcast(data: any) {
         const message = JSON.stringify(data);
-        console.log("🚀 Broadcasting data:", message);
+        log(`🚀 Broadcasting data: "${message}"`);
         this.clients.forEach((socket) => {
             if (socket.readyState === WebSocket.OPEN) {
                 try {
                     socket.send(message);
-                    console.log("📤 Broadcasted data to client");
+                    log("📤 Broadcasted data to client");
                 } catch (error) {
-                    console.error("❌ Error broadcasting to client:", error);
+                    log(`❌ Error broadcasting to client: "${error}"`, "error");
                 }
             }
         });
@@ -38,16 +40,16 @@ export class WebSocketManager {
         this.addClient(socket);
 
         socket.onmessage = (event) => {
-            console.log("🔧 Message from client:", event.data);
+            log(`🔧 Message from client: "${event.data}`);
         };
 
         socket.onclose = () => {
             this.removeClient(socket);
-            console.log("❌ WebSocket connection closed");
+            log("❌ WebSocket connection closed");
         };
 
         socket.onerror = (err) => {
-            console.error("❌ WebSocket error:", err);
+            log(`(handleConnection) WebSocket error: "${err}"`, "error");
             this.removeClient(socket);
         };
     }
@@ -56,12 +58,12 @@ export class WebSocketManager {
         const intervalId = setInterval(() => {
             if (!this.isBroadcasting) {
                 clearInterval(intervalId);
-                console.log("🛑 Broadcasting stopped.");
+                log("🛑 Broadcasting stopped.");
                 return;
             }
 
             const currentTime = new Date().toLocaleTimeString();
-            console.log("⏰ Broadcasting current time:", currentTime);
+            log(`⏰ Broadcasting current time: "${currentTime}"`);
             this.broadcast({ time: currentTime });
         }, 1000);
     }

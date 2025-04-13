@@ -3,6 +3,8 @@
 import { MongoClient } from "https://deno.land/x/mongo/mod.ts";
 import "@std/dotenv/load";
 
+import { log } from "./log.ts";
+
 
 const MONGODB_ADMIN_USER = Deno.env.get("MONGODB_ADMIN_USER") || "user";
 const MONGODB_ADMIN_PASS = Deno.env.get("MONGODB_ADMIN_PASS") || "password";
@@ -11,6 +13,8 @@ const MONGODB_HOST_PORT = Deno.env.get("MONGODB_HOST_PORT") || "27017";
 const MONGODB_DB_NAME = Deno.env.get("MONGODB_DB_NAME") || "sensordb";
 
 const MONGODB_URI = `mongodb://${ MONGODB_ADMIN_USER }:${ MONGODB_ADMIN_PASS }@${ MONGODB_HOST_ADRESS }:${ MONGODB_HOST_PORT }/admin`;
+log(`MONGODB_URI = "mongodb://${ MONGODB_ADMIN_USER }:********@${ MONGODB_HOST_ADRESS }:${ MONGODB_HOST_PORT }/admin"`);
+log(`MONGODB_URI = "${MONGODB_URI}`);
 
 // Declare a global client instance to maintain a single connection throughout the application.
 let client: MongoClient | null = null;
@@ -28,7 +32,7 @@ async function connectToMongoDB(databaseName: string) {
     try {
         // Attempt to connect to the MongoDB server.
         await client.connect(MONGODB_URI);
-        console.log(`✅ Connected to MongoDB! Database: "${databaseName}"`);
+        log(`✅ Connected to MongoDB! Database: "${databaseName}"`);
         // Return the database object to interact with the specified database.
         return client.database(databaseName);
     } catch (error) {
@@ -37,7 +41,7 @@ async function connectToMongoDB(databaseName: string) {
         if (error instanceof Error) {
             errorMessage = error.message;
         }
-        console.error("❌ Error connecting to database:", errorMessage);
+        log(`❌ Error connecting to database:, ${errorMessage}`);
         client = null;
         throw error;
     }
@@ -52,13 +56,13 @@ export async function dbCheck() {
         // Access the "admin" collection to ensure connectivity.
         await db.collection("admin");
         // Log a message indicating that the database check was successful.
-        console.log("✅ Database check completed successfully.");
+        log("✅ Database check completed successfully.");
     } catch (error) {
         let errorMessage = `❌ Database check failed`;
         if (error instanceof Error) {
             errorMessage = error.message;
         }
-        console.error("❌ Database check failed:", errorMessage);
+        log(`❌ Database check failed:", ${errorMessage}`);
     }
 }
 
@@ -76,33 +80,24 @@ export async function saveToCollection(data: Record<string, unknown>, collection
                 { $set: data },      // Update the document with new data.
                 { upsert: true }     // Enable upsert (update or insert).
             );
-            // console.log(`✅ Data upserted to collection "${collectionName}":`, _result);
-            console.log(`✅ Data upserted to collection "${collectionName}", data._id: "${data._id}"`);
-            // console.log(`${result}`);
+            // log(`✅ Data upserted to collection "${collectionName}":"${_result}"`);
+            log(`✅ Data upserted to collection "${collectionName}", data._id: "${data._id}"`);
+            // log(`${result}`);
         } else {
             // Regular insert if no _id field
             const insertResult = await collection.insertOne(data);
-            console.log(`✅ Data saved to collection "${collectionName}", insertResult: "${insertResult}"`);
-            // console.log(`${insertResult}`);
+            log(`✅ Data saved to collection "${collectionName}", insertResult: "${insertResult}"`);
+            // log(`${insertResult}`);
         }
     } catch (error) {
         let errorMessage = `Failed to save data to collection "${collectionName}".`;
         if (error instanceof Error) {
             errorMessage = error.message;
         }
-        console.error(`❌ Error saving to collection "${collectionName}":`, errorMessage);
+        log(`❌ Error saving to collection "${collectionName}":"${errorMessage}"`);
         throw new Error(errorMessage);
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -129,13 +124,13 @@ export async function saveDeviceToDatabase(deviceInfo: Record<string, unknown>):
             throw new Error("Invalid device data structure.");
         }
         await saveToCollection(deviceInfo, "devices");
-        console.log(`✅ Device "${deviceInfo._id}" saved to "devices" collection`);
+        log(`✅ Device "${deviceInfo._id}" saved to "devices" collection`);
     } catch (error) {
         let errorMessage = "❌ Error saving device data:";
         if (error instanceof Error) {
             errorMessage = error.message;
         }
-        console.error(errorMessage);
+        log(`${errorMessage}`);
         throw new Error("Failed to save device data");
     }
 }
@@ -163,13 +158,13 @@ export async function saveSensorToDatabase(sensorInfo: Record<string, unknown>):
             throw new Error("Invalid sensor data structure.");
         }
         await saveToCollection(sensorInfo, "sensors");
-        console.log(`✅ Sensor "${sensorInfo._id}" saved to "sensors" collection`);
+        log(`✅ Sensor "${sensorInfo._id}" saved to "sensors" collection`);
     } catch (error) {
         let errorMessage = "❌ Error saving sensor data:";
         if (error instanceof Error) {
             errorMessage = error.message;
         }
-        console.error(errorMessage);
+        log(`${errorMessage}`);
         throw new Error("Failed to save sensor data");
     }
 }
@@ -199,26 +194,16 @@ export async function saveSensorDataToDatabase(sensorData: Record<string, unknow
             throw new Error("Invalid sensor data entry structure.");
         }
         await saveToCollection(sensorData, "sensorData");
-        console.log(`✅ Sensor data saved to "sensorData" collection`);
+        log(`✅ Sensor data saved to "sensorData" collection`);
     } catch (error) {
         let errorMessage = "❌ Error saving sensor data:";
         if (error instanceof Error) {
             errorMessage = error.message;
         }
-        console.error(errorMessage);
+        log(`${errorMessage}`);
         throw new Error("Failed to save sensor data");
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -227,7 +212,7 @@ export async function disconnectFromMongoDB() {
     // Check if a client connection exists before attempting to close it.
     if (client) {
         await client.close();  // Close the MongoDB connection.
-        console.log("✅ Disconnected from MongoDB");
+        log("✅ Disconnected from MongoDB");
         client = null;  // Reset the client instance to null after disconnection.
     }
 }
@@ -236,9 +221,9 @@ export async function disconnectFromMongoDB() {
 
 // Add a signal listener to gracefully handle shutdown
 Deno.addSignalListener("SIGINT", async () => {
-    console.log("🛑 Gracefully shutting down...");
+    log("🛑 Gracefully shutting down...");
     await disconnectFromMongoDB();  // Close the database connection
-    console.log("✅ Database connection closed.");
-    console.log("🚪 Exiting application.");
+    log("✅ Database connection closed.");
+    log("🚪 Exiting application.");
     Deno.exit();
 });
