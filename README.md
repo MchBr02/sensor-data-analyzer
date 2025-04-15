@@ -23,7 +23,7 @@ You need **one of the following setups**:
 
 ---
 
-## 🔧 Getting Started (Deno)
+## 🔧 Getting Started
 
 ### 1. Clone the Repository
 
