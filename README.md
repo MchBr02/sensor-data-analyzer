@@ -53,7 +53,7 @@ MONGODB_ADMIN_PASS=password
 
 ---
 
-## 🧪 Run Locally with Deno
+## Option 1. 🧪 Run Locally with Deno
 
 ```bash
 deno task start
@@ -69,7 +69,7 @@ http://localhost:8000/data/chart
 
 ## OR
 
-## 🐳 Run with Docker compose
+## Option 2. 🐳 Run with `docker compose`
 
 
 ```bash
