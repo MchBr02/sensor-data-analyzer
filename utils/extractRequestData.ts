@@ -1,6 +1,9 @@
-// ./utils/extractRequestData.ts
+// /utils/extractRequestData.ts
 
 import { log } from "./log.ts";
+
+
+log(`Loaded: /utils/extractRequestData.ts`);
 
 // Function to extract known properties from the Request object
 export async function extractRequestData(req: Request): Promise<Record<string, unknown>> {

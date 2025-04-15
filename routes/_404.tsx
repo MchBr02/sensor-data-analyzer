@@ -1,4 +1,10 @@
+// /routes/_404.tsx
+
 import { Head } from "$fresh/runtime.ts";
+
+import { log } from "../utils/log.ts";
+
+log(`Loaded: /routes/_404.tsx`);
 
 export default function Error404() {
   return (

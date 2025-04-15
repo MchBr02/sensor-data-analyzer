@@ -1,6 +1,9 @@
 // routes/api/dbcheck.ts
 
 import { dbCheck } from "../../utils/database.ts";
+import { log } from "../../utils/log.ts";
+
+log(`Loaded: routes/api/dbcheck.ts`);
 
 export async function handler(_req: Request): Promise<Response> {
   try {

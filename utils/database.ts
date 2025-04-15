@@ -1,10 +1,11 @@
-// utils/database.ts
+// /utils/database.ts
 
 import { MongoClient } from "https://deno.land/x/mongo/mod.ts";
 import "@std/dotenv/load";
 
 import { log } from "./log.ts";
 
+log(`Loaded: /utils/database.ts`);
 
 const MONGODB_ADMIN_USER = Deno.env.get("MONGODB_ADMIN_USER") || "user";
 const MONGODB_ADMIN_PASS = Deno.env.get("MONGODB_ADMIN_PASS") || "password";
@@ -14,7 +15,6 @@ const MONGODB_DB_NAME = Deno.env.get("MONGODB_DB_NAME") || "sensordb";
 
 const MONGODB_URI = `mongodb://${ MONGODB_ADMIN_USER }:${ MONGODB_ADMIN_PASS }@${ MONGODB_HOST_ADRESS }:${ MONGODB_HOST_PORT }/admin`;
 log(`MONGODB_URI = "mongodb://${ MONGODB_ADMIN_USER }:********@${ MONGODB_HOST_ADRESS }:${ MONGODB_HOST_PORT }/admin"`);
-log(`MONGODB_URI = "${MONGODB_URI}`);
 
 // Declare a global client instance to maintain a single connection throughout the application.
 let client: MongoClient | null = null;

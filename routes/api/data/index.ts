@@ -1,8 +1,11 @@
-// ./api/data/index.ts
+// /routes/api/data/index.ts
 
 import { extractRequestData } from "../../../utils/extractRequestData.ts";
 import { RequestDataHandler, getLatestRequestData } from "../../../utils/requestDataHandler.ts";
 import { WebSocketManager } from "../../../utils/websocket.ts";
+import { log } from "../../../utils/log.ts";
+
+log(`Loaded: /routes/api/data/index.ts`);
 
 const wsManager = new WebSocketManager();
 
