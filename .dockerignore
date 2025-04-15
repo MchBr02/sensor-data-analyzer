@@ -2,4 +2,8 @@ node_modules
 node_modules/
 .DS_Store
 .git
+.gitignore
+.env
 fresh.gen.ts
+.dockerignore
+Dockerfile

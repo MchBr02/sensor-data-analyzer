@@ -21,7 +21,7 @@ export default function Home() {
         <p class="my-4">Check out our current tools:</p>
         <ListPages />
         <p class="my-4">
-          Page in development ⚙️. - 13.04.2025
+          Page in development ⚙️. - 15.04.2025
         </p>
       </div>
     </div>

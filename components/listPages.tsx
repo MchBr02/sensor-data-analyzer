@@ -1,4 +1,8 @@
-// ./components/listPages.tsx
+// /components/listPages.tsx
+
+import { log } from "../utils/log.ts";
+
+log(`Loaded: /components/listPages.tsx`);
 
 export const pages = [
     { path: "/", label: "Home" },

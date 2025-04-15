@@ -16,7 +16,7 @@ export default function LiveData() {
         function connectWebSocket() {
             const host = globalThis.location.host;
             const socketUrl = `ws://${host}/api/data`;
-            console.log("🔗 Connecting to WebSocket at:", socketUrl);
+            log(`🔗 Connecting to WebSocket at: "${socketUrl}`);
 
             socket = new WebSocket(socketUrl);
 
@@ -27,7 +27,7 @@ export default function LiveData() {
 
             socket.onmessage = (event) => {
                 try {
-                    console.log("📥 Raw WebSocket message received:", event.data);
+                    log(`📥 Raw WebSocket message received: "${event.data}`);
                     const receivedData = JSON.parse(event.data);
                     setData((prevData) => ({ ...prevData, ...receivedData }));
                     console.log("📥 Received new data:", receivedData);

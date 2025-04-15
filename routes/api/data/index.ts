@@ -19,7 +19,7 @@ export async function handler(req: Request): Promise<Response> {
 
             // When the WebSocket connection is established
             socket.onopen = () => {
-                console.log("🌐 WebSocket connection established");
+                log("🌐 WebSocket connection established");
                 const latestData = getLatestRequestData();
                 if (latestData) {
                     socket.send(JSON.stringify(latestData));

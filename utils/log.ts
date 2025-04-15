@@ -1,23 +1,26 @@
 // /utils/log.ts
 
-log(`Loaded: /utils/log.ts`, "raw");
 log(`Loaded: /utils/log.ts`); // <- Defaoult
-log(`Loaded: /utils/log.ts`, "info"); // <- Defaoult
-log(`Loaded: /utils/log.ts`, "success");
-log(`Loaded: /utils/log.ts`, "error");
-log(`Loaded: /utils/log.ts`, "debug");
-log(`Loaded: /utils/log.ts`, "warn");
+
+log(`->| LogTest`, "raw");
+log(`LogTest`, "info"); // <- Defaoult
+log(`LogTest`, "success");
+log(`LogTest`, "error");
+log(`LogTest`, "debug");
+log(`LogTest`, "warn");
 
 type LogType = "raw" | "info" | "success" | "error" | "debug" | "warn";
 
 export function log(message: string, type: LogType = "info"): void {
+  const devider = `|`;
+  const _ = ` `;
   const prefixMap: Record<LogType, string> = {
-    raw: "",
-    info: "ℹ️ | ",
-    success: "✅| ",
-    error: "❌| ",
-    debug: "🐛| ",
-    warn: "⚠️ | ",
+    raw: ``,
+    info: `ℹ️ ${devider}${_}`,
+    success: `✅${devider}${_}`,
+    error: `❌${devider}${_}`,
+    debug: `🐛${devider}${_}`,
+    warn: `⚠️ ${devider}${_}`,
   };
 
   const logFnMap: Record<LogType, (...args: any[]) => void> = {

@@ -37,7 +37,7 @@ cd sensor-data-analyzer
 Create a `.env` file based on the example:
 
 ```bash
-cp .env.example .env
+cp .env-example .env
 ```
 
 Then edit `.env`:
@@ -47,7 +47,6 @@ Then edit `.env`:
 MONGODB_HOST_ADRESS=mongo
 MONGODB_HOST_PORT=27017
 MONGODB_DB_NAME=sensordb
-MONGODB_DB_COLLECTION=sensordb
 MONGODB_ADMIN_USER=admin
 MONGODB_ADMIN_PASS=password
 ```
@@ -68,36 +67,19 @@ http://localhost:8000/data/chart
 
 ---
 
-## 🐳 Run with Docker
+## OR
 
-### Option 1: Pull from Docker Hub
+## 🐳 Run with Docker compose
 
-```bash
-docker pull mr02/sensor-data-analyzer:latest
-```
-
-Then run it:
 
 ```bash
-docker run -d -p 8000:8000 --name sensor-data-analyzer mr02/sensor-data-analyzer:latest
+docker compose up -d
 ```
 
 > ⚠️ Ensure a MongoDB instance is running and accessible (either as another container or hosted).
 ```cmd
 docker run -d --name mongo-db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password -p 27017:27017 mongo:latest
 ```
-
----
-
-### Option 2: Build and Run with Docker Compose
-
-```bash
-docker-compose up --build
-```
-
-> This will run both the app and MongoDB in connected containers.
-
----
 
 ## 📺 View the Live Data Stream
 
