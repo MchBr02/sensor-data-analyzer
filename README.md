@@ -67,8 +67,6 @@ http://localhost:8000/data/chart
 
 ---
 
-## OR
-
 ## Option 2. 🐳 Run with `docker compose`
 
 
