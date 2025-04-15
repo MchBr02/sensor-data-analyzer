@@ -65,8 +65,6 @@ Then open in your browser:
 http://localhost:8000/data/chart
 ```
 
----
-
 ## Option 2. 🐳 Run with `docker compose`
 
 
@@ -78,6 +76,8 @@ docker compose up -d
 ```cmd
 docker run -d --name mongo-db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password -p 27017:27017 mongo:latest
 ```
+
+---
 
 ## 📺 View the Live Data Stream
 
