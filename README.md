@@ -53,7 +53,8 @@ MONGODB_ADMIN_PASS=password
 
 ---
 
-## Option 1. 🧪 Run Locally with Deno
+### 3. Run app
+#### Option 1. 🧪 Run with Deno
 
 ```bash
 deno task start
@@ -65,16 +66,11 @@ Then open in your browser:
 http://localhost:8000/data/chart
 ```
 
-## Option 2. 🐳 Run with `docker compose`
+#### Option 2. 🐳 Run with `docker compose`
 
 
 ```bash
 docker compose up -d
-```
-
-> ⚠️ Ensure a MongoDB instance is running and accessible (either as another container or hosted).
-```cmd
-docker run -d --name mongo-db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password -p 27017:27017 mongo:latest
 ```
 
 ---
