@@ -1,7 +1,11 @@
-// ./routes/data/chart.tsx
+// /routes/data/chart.tsx
 
 import LiveDeviceData from "../../islands/LiveDeviceData.tsx";
 import LiveSensorCharts from "../../islands/LiveSensorCharts.tsx";
+
+import { log } from "../../utils/log.ts";
+
+log(`Loaded: /routes/data/chart.tsx`);
 
 export default function DataPage() {
   return (

@@ -1,4 +1,11 @@
+// /routes/_app/tsx
+
 import { type PageProps } from "$fresh/server.ts";
+
+import { log } from "../utils/log.ts";
+
+log(`Loaded: /routes/_app/tsx`);
+
 export default function App({ Component }: PageProps) {
   return (
     <html>

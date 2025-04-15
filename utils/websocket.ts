@@ -1,6 +1,8 @@
-// ./utils/websocket.ts
+// /utils/websocket.ts
 
 import { log } from "./log.ts";
+
+log(`Loaded: /utils/websocket.ts`);
 
 export class WebSocketManager {
     private clients: Set<WebSocket>;

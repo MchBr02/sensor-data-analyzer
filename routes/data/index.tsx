@@ -1,6 +1,10 @@
-// ./routes/data/index.tsx
+// /routes/data/index.tsx
 
 import LiveData from "../../islands/LiveRequestData.tsx";
+
+import { log } from "../../utils/log.ts";
+
+log(`Loaded: /routes/data/index.tsx`);
 
 export default function DataPage() {
     return (

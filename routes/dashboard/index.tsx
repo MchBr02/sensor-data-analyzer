@@ -1,4 +1,8 @@
-// ./routes/dashboard/index.tsx
+// /routes/dashboard/index.tsx
+
+import { log } from "../../utils/log.ts";
+
+log(`Loaded: /routes/dashboard/index.tsx`);
 
 export const handler = async (_req: Request) => {
     const html = await Deno.readTextFile("./static/dashboardTemplate.html");

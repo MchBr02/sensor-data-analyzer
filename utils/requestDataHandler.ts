@@ -1,9 +1,11 @@
-// utils/sensorDataHandler.ts
+// /utils/sensorDataHandler.ts
 
 import { saveToCollection } from "./database.ts";
 import { saveDeviceToDatabase, saveSensorToDatabase, saveSensorDataToDatabase } from "./database.ts";
 import { log } from "./log.ts";
 import { validateBasicStructure, isValidPayloadItem } from "./validDataStructure.ts";
+
+log(`Loaded: /utils/sensorDataHandler.ts`);
 
 let latestRequestData: Record<string, unknown> | null = null;
 

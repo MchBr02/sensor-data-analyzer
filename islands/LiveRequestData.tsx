@@ -1,6 +1,10 @@
-// ./islands/LiveRequestData.tsx
+// /islands/LiveRequestData.tsx
 
 import { useEffect, useState } from "preact/hooks";
+
+import { log } from "../utils/log.ts";
+
+log(`Loaded: /islands/LiveRequestData.tsx`);
 
 export default function LiveData() {
     const [data, setData] = useState({});
@@ -18,7 +22,7 @@ export default function LiveData() {
 
             socket.onopen = () => {
                 setConnectionStatus("Connected");
-                console.log("✅ WebSocket connection established");
+                log("✅ WebSocket connection established");
             };
 
             socket.onmessage = (event) => {

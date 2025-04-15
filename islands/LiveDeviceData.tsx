@@ -1,6 +1,11 @@
+// /islands/LiveDeviceData.tsx
+
 import { useEffect, useState } from "preact/hooks";
 
 import { validateBasicStructure } from "../utils/validDataStructure.ts";
+import { log } from "../utils/log.ts";
+
+log(`Loaded: /islands/LiveDeviceData.tsx`);
 
 type SensorEntry = { time: number } & Record<string, unknown>;
 type DeviceData = Record<string, Record<string, SensorEntry[]>>;

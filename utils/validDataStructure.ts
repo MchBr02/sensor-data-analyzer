@@ -1,6 +1,8 @@
-// utils/validSensorDataStructure.ts
+// /utils/validSensorDataStructure.ts
 
 import { log } from "./log.ts";
+
+log(`Loaded: /utils/validSensorDataStructure.ts`);
 
 /**
  * Utility function to validate if an object is non-null and of a specific type

@@ -1,5 +1,11 @@
+// /islands/LiveSensorCharts.tsx
+
 import { useEffect, useRef, useState } from "preact/hooks";
 import Chart from "https://esm.sh/stable/chart.js@4.4.0/auto?target=es2022";
+
+import { log } from "../utils/log.ts";
+
+log(`Loaded: /islands/LiveSensorCharts.tsx`);
 
 type SensorEntry = { time: number } & Record<string, unknown>;
 type DeviceData = Record<string, Record<string, SensorEntry[]>>;
