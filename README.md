@@ -18,15 +18,49 @@ A Deno Fresh.js application that collects sensor data, stores it in a MongoDB da
 
 You need **one of the following setups**:
 
-- ✅ Docker + Docker Compose (recommended for deployment)
+- 🐳 Docker + Docker Compose (recommended for deployment)
 - 🧪 Deno (for local development)
 
 ---
 
-## 🔧 Getting Started
+## ⚡ Quick deployment ( 🐳 Docker + Docker compose )
+> ⚠️ Make sure your `8000` and `27017` ports are free!
+#### 🪟 Windows (Powershell)
+```powershell
+git clone https://github.com/MchBr02/sensor-data-analyzer.git; cd sensor-data-analyzer; Copy-Item .env-example .env; docker compose up -d
+```
+#### 🐧 Linux (Bash)
+```bash
+git clone https://github.com/MchBr02/sensor-data-analyzer.git; cd sensor-data-analyzer/; cp .env-example .env; docker compose up -d
+```
+⚠️ This line does the following in one go:
+1. Clones the repo,
+2. Navigates into the project directory,
+3. Copies the `.env-example` file to `.env`,
+4. Starts everything in detached mode using `docker Compose`.
+   - Starts a "`mongo-db`" container with the `.env` variables.
+   - Starts "`deno-app`" container with the `.env` variables.
+
+Default `.env` variables:
+```bash
+# .env-example
+
+# MONGO_DB
+MONGODB_HOST_ADRESS=mongo-db
+MONGODB_HOST_PORT=27017
+MONGODB_DB_NAME=sensordb
+MONGODB_ADMIN_USER=admin
+# Make sure password is in URL format!
+MONGODB_ADMIN_PASS=password
+```
+
+---
+
+## 🔧 Getting Started (🧪 Deno)
 
 ### 1. Clone the Repository
 
+🐧 Bash:
 ```bash
 git clone https://github.com/MchBr02/sensor-data-analyzer.git
 cd sensor-data-analyzer
@@ -36,6 +70,7 @@ cd sensor-data-analyzer
 
 Create a `.env` file based on the example:
 
+🐧 Bash:
 ```bash
 cp .env-example .env
 ```
@@ -50,8 +85,6 @@ MONGODB_DB_NAME=sensordb
 MONGODB_ADMIN_USER=admin
 MONGODB_ADMIN_PASS=password
 ```
-
----
 
 ### 3. Run app
 #### Option 1. 🧪 Run with Deno
@@ -86,6 +119,8 @@ http://localhost:8000/data/chart
 You'll see:
 - 📦 Raw device data
 - 📈 Real-time sensor graphs
+
+![Screenshot presenting Sensor Charts and Data](static/image.png)
 
 ---
 
@@ -123,8 +158,15 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 ## 🗄️ Checking stored data
 ### Using MongoDB Compass
-- Open your app and and `add new connection`
+- Open your app and `add new connection`
 - Default URI: `mongodb://admin:password@localhost:27017/`
+
+# ✅ To-Do
+
+- Add an option to **view** data from the database  
+- Add an option to **select a time frame** for displaying data  
+- Add **event tracking** so users can monitor how their data is represented  
+- (Optional) Add a **login system** so multiple users can manage and track their own data  
 
 ## 📄 License
 
