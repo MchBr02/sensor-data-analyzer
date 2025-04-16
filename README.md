@@ -92,9 +92,6 @@ You'll see:
 ## 📤 Sending Sensor Data (Example)
 
 Send a POST request using `curl`:
-
-## Sending Sensor Data (Example)
-Use `curl` to send a POST request:
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{
   "messageId": 57,
@@ -123,6 +120,11 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 
 ---
+
+## 🗄️ Checking stored data
+### Using MongoDB Compass
+- Open your app and and `add new connection`
+- Default URI: `mongodb://admin:password@localhost:27017/`
 
 ## 📄 License
 
