@@ -6,4 +6,3 @@ node_modules/
 .env
 fresh.gen.ts
 .dockerignore
-Dockerfile
