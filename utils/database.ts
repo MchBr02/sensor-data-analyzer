@@ -285,10 +285,6 @@ export async function disconnectFromMongoDB() {
     }
 }
 
-
-
-dbCheck();
-
 // Add a signal listener to gracefully handle shutdown
 Deno.addSignalListener("SIGINT", async () => {
     log("🛑 Gracefully shutting down...");
