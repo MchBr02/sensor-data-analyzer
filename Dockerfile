@@ -1,3 +1,5 @@
+#Dockerfile
+
 # Use the official Deno image from Docker Hub
 FROM denoland/deno:alpine
 
@@ -6,6 +8,13 @@ WORKDIR /app
 
 # Copy the project files to the container
 COPY . .
+
+# Install Mongo shell for healthcheck script
+RUN apk add --no-cache mongodb-tools
+
+# Copy and allow execution of wait script
+COPY wait-for-mongo.sh /wait-for-mongo.sh
+RUN chmod +x /wait-for-mongo.sh
 
 # Set the environment variables file location
 ENV DENO_ENV=production
@@ -24,4 +33,4 @@ RUN deno cache dev.ts
 RUN deno cache deps.ts
 
 # Run the application
-CMD ["deno", "task", "start"]
+CMD ["sh", "/wait-for-mongo.sh"]
