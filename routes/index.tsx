@@ -18,10 +18,10 @@ export default function Home() {
           alt="the Fresh logo: a sliced lemon dripping with juice"
         />
         <h1 class="text-4xl font-bold">Sensor data analyzer</h1>
-        <p class="my-4">Check out our current tools:</p>
+        <p class="my-4">Check out our tools:</p>
         <ListPages />
         <p class="my-4">
-          Page in development ⚙️. - 15.04.2025
+          Page in development ⚙️. - 17.04.2025
         </p>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import Chart from "https://esm.sh/stable/chart.js@4.4.0/auto?target=es2022";
 
+import { getSharedWebSocketClient } from "../utils/websocket.ts";
 import { log } from "../utils/log.ts";
 
 log(`Loaded: /islands/LiveSensorCharts.tsx`);
@@ -18,45 +19,41 @@ export default function LiveSensorCharts() {
   const chartRefs = useRef<Record<string, Chart>>({});
 
   useEffect(() => {
-    const host = globalThis.location.host;
-    const socket = new WebSocket(`ws://${host}/api/data`);
+    const ws = getSharedWebSocketClient();
 
-    socket.onopen = () => setStatus("Connected");
-    socket.onclose = () => setStatus("Disconnected");
+    const unsubscribe = ws.subscribe((data) => {
+      const body = data.body;
 
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        const body = data.body;
+      if (
+        typeof body?.deviceId === "string" &&
+        Array.isArray(body.payload)
+      ) {
+        setDevices((prev) => {
+          const updated = { ...prev };
+          const { deviceId, payload } = body;
 
-        if (
-          typeof body?.deviceId === "string" &&
-          Array.isArray(body.payload)
-        ) {
-          setDevices((prev) => {
-            const updated = { ...prev };
-            const { deviceId, payload } = body;
+          if (!updated[deviceId]) updated[deviceId] = {};
 
-            if (!updated[deviceId]) updated[deviceId] = {};
+          for (const sensor of payload) {
+            const { name, time, values } = sensor;
+            const sensorData = { time, ...values };
 
-            for (const sensor of payload) {
-              const { name, time, values } = sensor;
-              const sensorData = { time, ...values };
+            if (!updated[deviceId][name]) updated[deviceId][name] = [];
 
-              if (!updated[deviceId][name]) updated[deviceId][name] = [];
+            updated[deviceId][name].push(sensorData);
+          }
 
-              updated[deviceId][name].push(sensorData);
-            }
-
-            return updated;
-          });
-        }
-      } catch (e) {
-        console.error("WebSocket parse error", e);
+          return updated;
+        });
       }
-    };
+    });
 
-    return () => socket.close();
+    const stopStatus = ws.onStatusChange(setStatus);
+
+    return () => {
+      unsubscribe();
+      stopStatus();
+    };
   }, []);
 
   // Update charts when devices or selectedFields change

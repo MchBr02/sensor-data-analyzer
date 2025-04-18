@@ -3,6 +3,75 @@
 import { log } from "./log.ts";
 
 log(`Loaded: /utils/websocket.ts`);
+type Callback = (data: any) => void;
+
+class WebSocketClient {
+  private socket: WebSocket | null = null;
+  private subscribers = new Set<Callback>();
+  private statusListeners = new Set<(status: string) => void>();
+
+  constructor() {
+    this.connect();
+  }
+
+  private connect() {
+    const host = globalThis.location?.host;
+    if (!host) {
+      console.warn("🌐 WebSocketClient: Skipping connection — not in browser");
+      return;
+    }
+
+    const socketUrl = `ws://${host}/api/data`;
+    this.socket = new WebSocket(socketUrl);
+
+    this.socket.onopen = () => {
+      this.broadcastStatus("Connected");
+    };
+
+    this.socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        this.subscribers.forEach((cb) => cb(data));
+      } catch (e) {
+        console.error("WebSocket parse error:", e);
+      }
+    };
+
+    this.socket.onclose = () => {
+      this.broadcastStatus("Disconnected");
+      setTimeout(() => this.connect(), 1000);
+    };
+
+    this.socket.onerror = (e) => {
+      console.error("WebSocket error:", e);
+      this.socket?.close();
+    };
+  }
+
+  private broadcastStatus(status: string) {
+    this.statusListeners.forEach((cb) => cb(status));
+  }
+
+  subscribe(callback: Callback): () => void {
+    this.subscribers.add(callback);
+    return () => this.subscribers.delete(callback);
+  }
+
+  onStatusChange(callback: (status: string) => void): () => void {
+    this.statusListeners.add(callback);
+    return () => this.statusListeners.delete(callback);
+  }
+}
+
+let client: WebSocketClient | null = null;
+
+export function getSharedWebSocketClient(): WebSocketClient {
+  if (!client) {
+    client = new WebSocketClient();
+  }
+  return client;
+}
+
 
 export class WebSocketManager {
     private clients: Set<WebSocket>;
@@ -20,7 +89,7 @@ export class WebSocketManager {
 
     removeClient(socket: WebSocket) {
         this.clients.delete(socket);
-        log(`❌ Client removed. Total clients: "${this.clients.size}"`);
+        log(`🔌 Client removed. Total clients: "${this.clients.size}"`);
     }
 
     broadcast(data: any) {
@@ -47,7 +116,7 @@ export class WebSocketManager {
 
         socket.onclose = () => {
             this.removeClient(socket);
-            log("❌ WebSocket connection closed");
+            log("🔌 WebSocket connection closed");
         };
 
         socket.onerror = (err) => {

@@ -1,7 +1,7 @@
 // /islands/LiveDeviceData.tsx
 
 import { useEffect, useState } from "preact/hooks";
-
+import { getSharedWebSocketClient } from "../utils/websocket.ts";
 import { validateBasicStructure } from "../utils/validDataStructure.ts";
 import { log } from "../utils/log.ts";
 
@@ -15,65 +15,41 @@ export default function LiveDeviceData() {
   const [connectionStatus, setConnectionStatus] = useState("Connecting...");
 
   useEffect(() => {
-    let socket: WebSocket;
+    const ws = getSharedWebSocketClient();
 
-    function connectWebSocket() {
-      const host = globalThis.location.host;
-      const socketUrl = `ws://${host}/api/data`;
-      socket = new WebSocket(socketUrl);
+    const unsubscribe = ws.subscribe((data) => {
+      if (!validateBasicStructure(data)) return;
 
-      socket.onopen = () => {
-        setConnectionStatus("Connected");
-        console.log("✅ WebSocket connected");
-      };
+      const { deviceId, payload } = data.body;
 
-      socket.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (!validateBasicStructure(data)) return;
+      setDevices((prevDevices) => {
+        const updated = { ...prevDevices };
 
-          const { deviceId, payload } = data.body;
-
-          setDevices((prevDevices) => {
-            const updated = { ...prevDevices };
-
-            if (!updated[deviceId]) {
-              updated[deviceId] = {};
-            }
-
-            payload.forEach(({ name, time, values }: any) => {
-              if (!updated[deviceId][name]) {
-                updated[deviceId][name] = [];
-              }
-
-              updated[deviceId][name].push({
-                time,
-                ...values,
-              });
-            });
-
-            return updated;
-          });
-        } catch (err) {
-          console.error("❌ Error parsing WebSocket message", err);
+        if (!updated[deviceId]) {
+          updated[deviceId] = {};
         }
-      };
 
-      socket.onclose = () => {
-        setConnectionStatus("Disconnected");
-        console.log("❌ WebSocket closed, reconnecting...");
-        setTimeout(connectWebSocket, 1000);
-      };
+        payload.forEach(({ name, time, values }: any) => {
+          if (!updated[deviceId][name]) {
+            updated[deviceId][name] = [];
+          }
 
-      socket.onerror = (err) => {
-        console.error("❌ WebSocket error", err);
-        socket.close();
-      };
-    }
+          updated[deviceId][name].push({
+            time,
+            ...values,
+          });
+        });
 
-    connectWebSocket();
+        return updated;
+      });
+    });
 
-    return () => socket?.close();
+    const stopStatusUpdates = ws.onStatusChange(setConnectionStatus);
+
+    return () => {
+      unsubscribe();
+      stopStatusUpdates();
+    };
   }, []);
 
   return (
