@@ -1,4 +1,4 @@
-// /components/listPages.tsx
+// /components/ListPages.tsx
 
 import { log } from "../utils/log.ts";
 

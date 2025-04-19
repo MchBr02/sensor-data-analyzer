@@ -1,6 +1,6 @@
 // /routes/index.tsx
 
-import ListPages from "../components/listPages.tsx";
+import ListPages from "../components/ListPages.tsx";
 import { log } from "../utils/log.ts";
 
 log(`Loaded: /routes/index.tsx`);

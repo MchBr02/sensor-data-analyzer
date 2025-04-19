@@ -2,6 +2,7 @@
 
 import { type PageProps } from "$fresh/server.ts";
 
+import Header from "../components/Header.tsx";
 import { log } from "../utils/log.ts";
 
 log(`Loaded: /routes/_app/tsx`);
@@ -17,6 +18,7 @@ export default function App({ Component }: PageProps) {
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       </head>
       <body>
+        <Header/>
         <Component />
       </body>
     </html>

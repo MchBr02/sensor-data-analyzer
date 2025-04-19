@@ -11,8 +11,7 @@ export default function DataPage() {
   return (
     <div class="flex flex-wrap gap-6 p-4">
       {/* Live Sensor Charts Panel */}
-      <div
-        class="flex-1 min-w-[300px] max-w-[900px] border border-gray-500 rounded-lg p-4"      >
+      <div class="flex-1 min-w-[300px] max-w-[900px] border border-gray-500 rounded-lg p-4">
         <h1 class="text-2xl font-bold mb-4">📊 Live Sensor Charts</h1>
         <LiveSensorCharts />
       </div>
